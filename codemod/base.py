@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 # Copyright (c) 2007-2008 Facebook
 #
@@ -25,6 +25,7 @@ import re
 import sys
 import textwrap
 from math import ceil
+if os.uname()[0] == 'Darwin': import spotlight_util
 
 
 def is_extensionless(path):
@@ -848,6 +849,8 @@ def _terminal_restore_color():
 def _parse_command_line():
     global yes_to_all
 
+    is_darwin = (os.uname()[0] == 'Darwin')
+
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description=textwrap.dedent(r"""
@@ -945,6 +948,13 @@ def _parse_command_line():
     parser.add_argument('subst', nargs='?', action='store', type=str,
                         help='Substitution to replace with.')
 
+    if is_darwin:
+      parser.add_argument('--spotlight', action='store_true',
+                          help='If set, use the OS/X Spotlight database to '
+                               'speed up the file and regex search. '
+                               'You *must* have run "mdimport ." to ensure '
+                               'I find everything!')
+
     arguments = parser.parse_args()
 
     if (
@@ -979,6 +989,12 @@ def _parse_command_line():
         options['editor'] = arguments.editor
     options['just_count'] = arguments.count
     options['default_no'] = arguments.default_no
+    if is_darwin:
+      options['spotlight'] = arguments.spotlight
+      if arguments.spotlight:
+        options['match'] = arguments.match
+        print( 'Please note: if you haven\'t run "mdimport" recently from this '
+               'directory, I may not find every instance!')
 
     return options
 
