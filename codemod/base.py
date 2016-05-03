@@ -964,13 +964,13 @@ def _parse_command_line():
                         help='Don\'t run normally.  Instead, just print '
                              'out number of times places in the codebase '
                              'where the \'query\' matches.')
+    parser.add_argument('--input-file-list', action='store', type=str,
+                        help='A file containing a list of '
+                        'filenames to search.  Use \'-\' for stdin.')
     parser.add_argument('match', nargs='?', action='store', type=str,
                         help='Regular expression to match.')
     parser.add_argument('subst', nargs='?', action='store', type=str,
                         help='Substitution to replace with.')
-    parser.add_argument('input-file-list', action='store', type=str,
-                        help='A file containing a list of '
-                        'filenames to search.  Use \'-\' for stdin.')
 
     arguments = parser.parse_args()
 
