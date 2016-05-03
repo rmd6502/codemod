@@ -25,8 +25,9 @@ import re
 import sys
 import textwrap
 from math import ceil
-if os.uname()[0] == 'Darwin':
-    from spotlight_util import *
+import platform
+if platform.system() == 'Darwin':
+    from spotlight_util import SpotlightUtil
 
 
 def is_extensionless(path):
@@ -298,8 +299,7 @@ class Query(object):
                  root_directory='.',
                  path_filter=_default_path_filter,
                  inc_extensionless=False,
-                 match_pattern=None,
-                 spotlight=False):
+                 spotlight_match_pattern=None):
         """
         @param suggestor            A function that takes a list of lines and
                                     generates instances of Patch to suggest.
@@ -329,11 +329,9 @@ class Query(object):
         @param inc_extensionless    If True, will include all files without an
                                     extension when checking
                                     against the path_filter
-        @param match_pattern        String representation of the match pattern,
-                                    for use by spotlight_util if --spotlight is
-                                    set.
-        @param spotlight            If True, will use spotlight search to save
-                                    time. Requires match_pattern to be set.
+        @param spotlight_match_pattern String representation of the match
+                                    pattern, for use by spotlight_util if
+                                    --spotlight is set.
         """
         self.suggestor = suggestor
         self._start = start
@@ -342,8 +340,7 @@ class Query(object):
         self.path_filter = path_filter
         self.inc_extensionless = inc_extensionless
         self._all_patches_cache = None
-        self._match_pattern = match_pattern
-        self._use_spotlight = spotlight
+        self._spotlight_match_pattern = spotlight_match_pattern
 
     def clone(self):
         import copy
@@ -411,9 +408,9 @@ class Query(object):
         end_pos = self.end_position or Position(None, None)
 
         path_list = None
-        if self._use_spotlight:
-            path_list = SpotlightUtil.walk_directory(self.root_directory,
-                                                     self._match_pattern)
+        if self._spotlight_match_pattern is not None:
+            path_list = SpotlightUtil.walk_directory(
+                self.root_directory, self._spotlight_match_pattern)
         else:
             path_list = Query._walk_directory(self.root_directory)
         path_list = Query._sublist(path_list, start_pos.path, end_pos.path)
@@ -867,7 +864,7 @@ def _terminal_restore_color():
 def _parse_command_line():
     global yes_to_all
 
-    is_darwin = (os.uname()[0] == 'Darwin')
+    is_darwin = (platform.system() == 'Darwin')
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
@@ -968,7 +965,7 @@ def _parse_command_line():
 
     if is_darwin:
         parser.add_argument('--spotlight', action='store_true',
-                            help='If set, use the OS/X Spotlight database to '
+                            help='If set, use the OS X Spotlight database to '
                                  'speed up the file and regex search. '
                                  'Note that Spotlight queries use a limited '
                                  'syntax compared to regular expressions. '
@@ -1005,9 +1002,8 @@ def _parse_command_line():
 
     options = {}
     if is_darwin:
-        query_options['spotlight'] = arguments.spotlight
         if arguments.spotlight:
-            query_options['match_pattern'] = arguments.match
+            query_options['spotlight_match_pattern'] = arguments.match
             print('Please note: if you haven\'t run "mdimport" recently from '
                   'this directory, I may not find every instance!')
 
