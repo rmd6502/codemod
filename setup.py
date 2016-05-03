@@ -2,6 +2,7 @@ try:
     from setuptools import setup, find_packages
 except ImportError:
     from distutils.core import setup, find_packages
+import platform
 
 description = (
     'Codemod is a tool/library to assist you with large-scale codebase '
@@ -9,6 +10,10 @@ description = (
     'oversight and occasional intervention. Codemod was developed at '
     'Facebook and released as open source.'
 )
+
+requires = []
+if platform.system() == 'Darwin':
+    requires = ['pyobjc']
 
 setup(
     name='codemod',
@@ -27,6 +32,7 @@ setup(
         [console_scripts]
         codemod=codemod.base:main
     ''',
+    requires=requires,
     tests_require=['flake8', 'pytest'],
     test_suite='py.test'
 )
