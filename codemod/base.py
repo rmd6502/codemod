@@ -407,7 +407,7 @@ class Query(object):
 
         path_list = None
         if self._use_spotlight:
-          path_list = SpotlightUtil.walk_directory(self.root_directory, self.match_pattern)
+          path_list = SpotlightUtil.walk_directory(self.root_directory, self._match_pattern)
         else:
           path_list = Query._walk_directory(self.root_directory)
         path_list = Query._sublist(path_list, start_pos.path, end_pos.path)
@@ -418,6 +418,7 @@ class Query(object):
             (self.inc_extensionless and is_extensionless(path))
         )
         for path in path_list:
+            print "path "+path
             try:
                 lines = list(open(path))
             except IOError:
@@ -998,11 +999,6 @@ def _parse_command_line():
                         if arguments.exclude_paths is not None else None))
 
     options = {}
-    options['query'] = Query(**query_options)
-    if arguments.editor is not None:
-        options['editor'] = arguments.editor
-    options['just_count'] = arguments.count
-    options['default_no'] = arguments.default_no
     if is_darwin:
       query_options['spotlight'] = arguments.spotlight
       if arguments.spotlight:
@@ -1010,6 +1006,11 @@ def _parse_command_line():
         print( 'Please note: if you haven\'t run "mdimport" recently from this '
                'directory, I may not find every instance!')
 
+    options['query'] = Query(**query_options)
+    if arguments.editor is not None:
+        options['editor'] = arguments.editor
+    options['just_count'] = arguments.count
+    options['default_no'] = arguments.default_no
     return options
 
 

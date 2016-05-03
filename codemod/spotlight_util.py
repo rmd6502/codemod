@@ -15,8 +15,8 @@ class SpotlightUtil(object):
     #going to trust that the user specified the proper spotlight format pattern
     predicate = NSPredicate.predicateWithFormat_("(kMDItemTextContent = \""+match_pattern+"\")")
     if root_directory is not None:
-      query.setSearchScopes_(root_directory)
-    query.predicate = predicate
+      query.setSearchScopes_([root_directory])
+    query.setPredicate_(predicate)
     query.startQuery()
     # TODO: figure out how to do this asynchronously if possible
     while query.isGathering():
@@ -24,7 +24,7 @@ class SpotlightUtil(object):
     query.stopQuery()
     items = []
     for item in query.results():
-      filename = item.valueForAttribute_(NSMetadataItemFSNameKey)
+      filename = item.valueForAttribute_(NSMetadataItemPathKey)
       if filename is not None:
-        items += filename
+        items.append(filename)
     return items
