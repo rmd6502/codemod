@@ -66,8 +66,8 @@ Options (all optional) include:
       Don't run normally.  Instead, just run the unit tests embedded in the
       codemod library.
     --input-file-list
-      A path to a file containing a list of files to check for the input pattern.  This
-      has the potential to speed things up significantly, see below.
+      A path to a file containing a list of files to check for the input pattern, 
+      or '-' for stdin.  This has the potential to speed things up significantly, see below.
 
 You can also use codemod for transformations that are much more sophisticated than regular expression substitution.  Rather than using the command line, you write Python code that looks like:
 
@@ -86,11 +86,11 @@ files, that we presumably know already has the pattern of interest.
 There are many possible ways to generate this list of files, here are three:
 1.  ## Spotlight ##
 You can use the mdfind command to search for files containing specific content.
-    mdfind -onlyin . -name .m '@interface Foo'
+    mdfind -onlyin . -name .m '@interface Foo' | codemod -options -input-file-list -
 1.  ## hg grep ##
-    hg grep -l '@interface Foo'
+    hg grep -l '@interface Foo' | codemod -options -input-file-list -
 1.  ## git grep ##
-    git grep -l '@interface Foo'
+    git grep -l '@interface Foo' | codemod -options -input-file-list -
 
 Background
 ----------
