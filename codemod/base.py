@@ -25,7 +25,8 @@ import re
 import sys
 import textwrap
 from math import ceil
-if os.uname()[0] == 'Darwin': from spotlight_util import *
+if os.uname()[0] == 'Darwin':
+    from spotlight_util import *
 
 
 def is_extensionless(path):
@@ -326,9 +327,10 @@ class Query(object):
                                     extension when checking
                                     against the path_filter
         @param match_pattern        String representation of the match pattern,
-                                    for use by spotlight_util if --spotlight is set
-        @param spotlight            If True, will use spotlight search to save time.
-                                    Requires match_pattern to be set.
+                                    for use by spotlight_util if --spotlight is
+                                    set.
+        @param spotlight            If True, will use spotlight search to save
+                                    time. Requires match_pattern to be set.
         """
         self.suggestor = suggestor
         self._start = start
@@ -407,9 +409,10 @@ class Query(object):
 
         path_list = None
         if self._use_spotlight:
-          path_list = SpotlightUtil.walk_directory(self.root_directory, self._match_pattern)
+            path_list = SpotlightUtil.walk_directory(self.root_directory,
+                                                     self._match_pattern)
         else:
-          path_list = Query._walk_directory(self.root_directory)
+            path_list = Query._walk_directory(self.root_directory)
         path_list = Query._sublist(path_list, start_pos.path, end_pos.path)
         path_list = (
             path for path in path_list if
@@ -961,13 +964,13 @@ def _parse_command_line():
                         help='Substitution to replace with.')
 
     if is_darwin:
-      parser.add_argument('--spotlight', action='store_true',
-                          help='If set, use the OS/X Spotlight database to '
-                               'speed up the file and regex search. '
-                               'Note that Spotlight queries use a limited '
-                               'syntax compared to regular expressions. '
-                               'You *must* have run "mdimport ." to ensure '
-                               'I find everything!')
+        parser.add_argument('--spotlight', action='store_true',
+                            help='If set, use the OS/X Spotlight database to '
+                                 'speed up the file and regex search. '
+                                 'Note that Spotlight queries use a limited '
+                                 'syntax compared to regular expressions. '
+                                 'You *must* have run "mdimport ." to ensure '
+                                 'I find everything!')
 
     arguments = parser.parse_args()
 
@@ -999,11 +1002,11 @@ def _parse_command_line():
 
     options = {}
     if is_darwin:
-      query_options['spotlight'] = arguments.spotlight
-      if arguments.spotlight:
-        query_options['match_pattern'] = arguments.match
-        print( 'Please note: if you haven\'t run "mdimport" recently from this '
-               'directory, I may not find every instance!')
+        query_options['spotlight'] = arguments.spotlight
+        if arguments.spotlight:
+            query_options['match_pattern'] = arguments.match
+            print('Please note: if you haven\'t run "mdimport" recently from '
+                  'this directory, I may not find every instance!')
 
     options['query'] = Query(**query_options)
     if arguments.editor is not None:
