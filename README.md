@@ -65,6 +65,9 @@ Options (all optional) include:
     --test
       Don't run normally.  Instead, just run the unit tests embedded in the
       codemod library.
+    --input-file-list
+      A path to a file containing a list of files to check for the input pattern.  This
+      has the potential to speed things up significantly, see below.
 
 You can also use codemod for transformations that are much more sophisticated than regular expression substitution.  Rather than using the command line, you write Python code that looks like:
 
@@ -72,6 +75,22 @@ You can also use codemod for transformations that are much more sophisticated th
     codemod.Query(...).run_interactive()
 
 See the documentation for the Query class for details.
+
+Speeding it Up
+--------------
+
+While Codemod will allow sweeping changes much more quickly and accurately than doing it manually,
+its speed still leaves a lot to be desired.
+By generating a list of filenames, Codemod's cumbersome directory walk can be shortcut to a list of
+files, that we presumably know already has the pattern of interest.
+There are many possible ways to generate this list of files, here are three:
+1.  ## Spotlight ##
+You can use the mdfind command to search for files containing specific content.
+    mdfind -onlyin . -name .m '@interface Foo'
+1.  ## hg grep ##
+    hg grep -l '@interface Foo'
+1.  ## git grep ##
+    git grep -l '@interface Foo'
 
 Background
 ----------

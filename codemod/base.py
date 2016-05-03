@@ -295,7 +295,8 @@ class Query(object):
                  end=None,
                  root_directory='.',
                  path_filter=_default_path_filter,
-                 inc_extensionless=False):
+                 inc_extensionless=False,
+                 input_file_list=None):
         """
         @param suggestor            A function that takes a list of lines and
                                     generates instances of Patch to suggest.
@@ -325,6 +326,8 @@ class Query(object):
         @param inc_extensionless    If True, will include all files without an
                                     extension when checking
                                     against the path_filter
+        @param input_file_list      A file containing a list of file paths to
+                                    search for the input pattern, or None.
         """
         self.suggestor = suggestor
         self._start = start
@@ -333,6 +336,7 @@ class Query(object):
         self.path_filter = path_filter
         self.inc_extensionless = inc_extensionless
         self._all_patches_cache = None
+        self._input_file_list = input_file_list
 
     def clone(self):
         import copy
@@ -395,11 +399,28 @@ class Query(object):
         that satisfy the given conditions given
         query conditions, where patches for
         each file are suggested by self.suggestor.
+
+        >>> q1 = Query(regex_suggestor('foo', 'bar'), \
+            inc_extensionless=True, input_file_list="testFiles/testFile")
+        >>> map(lambda filename: filename.replace('\\n',''), \
+            list(open(q1._input_file_list)))
+        ['foo', 'bar']
+
         """
         start_pos = self.start_position or Position(None, None)
         end_pos = self.end_position or Position(None, None)
 
-        path_list = Query._walk_directory(self.root_directory)
+        if self._input_file_list is not None:
+            if self._input_file_list == '-':
+                inputFile = sys.stdin
+            else:
+                inputFile = open(self._input_file_list)
+            path_list = map(lambda filename: filename.replace('\\n',''), \
+                list(inputFile))
+            if inputFile != sys.stdin:
+                inputFile.close()
+        else:
+            path_list = Query._walk_directory(self.root_directory)
         path_list = Query._sublist(path_list, start_pos.path, end_pos.path)
         path_list = (
             path for path in path_list if
@@ -947,6 +968,9 @@ def _parse_command_line():
                         help='Regular expression to match.')
     parser.add_argument('subst', nargs='?', action='store', type=str,
                         help='Substitution to replace with.')
+    parser.add_argument('input-file-list', action='store', type=str,
+                        help='A file containing a list of '
+                        'filenames to search.  Use \'-\' for stdin.')
 
     arguments = parser.parse_args()
 
@@ -968,6 +992,7 @@ def _parse_command_line():
     query_options['end'] = arguments.end
     query_options['root_directory'] = arguments.d
     query_options['inc_extensionless'] = arguments.include_extensionless
+    query_options['input_file_list'] = arguments.input_file_list
 
     if arguments.extensions is not None or arguments.exclude_paths is not None:
         query_options['path_filter'] = (
