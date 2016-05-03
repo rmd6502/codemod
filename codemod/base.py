@@ -25,9 +25,11 @@ import re
 import sys
 import textwrap
 from math import ceil
-import platform
-if platform.system() == 'Darwin':
+try:
     from spotlight_util import SpotlightUtil
+    is_darwin = True
+except ImportError:
+    is_darwin = False
 
 
 def is_extensionless(path):
@@ -864,8 +866,6 @@ def _terminal_restore_color():
 
 def _parse_command_line():
     global yes_to_all
-
-    is_darwin = (platform.system() == 'Darwin')
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
