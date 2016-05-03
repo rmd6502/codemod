@@ -8,10 +8,17 @@ try:
 
     class SpotlightUtil(object):
         """
-        Searches a directory hierarchy using OS/X spotlight
+        Searches a directory hierarchy using OS/X spotlight.
         """
 
         def walk_directory(self, root_directory, match_pattern):
+            """
+            Uses Spotlight to find all files containing a particular pattern
+
+            >>> util = SpotlightUtil()
+            >>> util.walk_directory(".","try:")
+            [ "base.py", "setup.py", "spotlight_util.py" ]
+            """
             query = Cocoa.NSMetadataQuery.alloc().init()
             # going to trust that the user specified the proper
             # spotlight format pattern
