@@ -966,7 +966,9 @@ def _parse_command_line():
                              'where the \'query\' matches.')
     parser.add_argument('--input-file-list', action='store', type=str,
                         help='A file containing a list of '
-                        'filenames to search.  Use \'-\' for stdin.')
+                        'filenames to search.  Use \'-\' for stdin. '
+                        'Note that using stdin means you won\'t be '
+                        'able to specify an action per file!')
     parser.add_argument('match', nargs='?', action='store', type=str,
                         help='Regular expression to match.')
     parser.add_argument('subst', nargs='?', action='store', type=str,
