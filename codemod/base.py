@@ -21,15 +21,12 @@
 
 import argparse
 import os
+import platform
 import re
 import sys
 import textwrap
 from math import ceil
-try:
-    from spotlight_util import SpotlightUtil
-    is_darwin = True
-except ImportError:
-    is_darwin = False
+from spotlight_util import SpotlightUtil
 
 
 def is_extensionless(path):
@@ -964,6 +961,7 @@ def _parse_command_line():
     parser.add_argument('subst', nargs='?', action='store', type=str,
                         help='Substitution to replace with.')
 
+    is_darwin = platform.system() == 'Darwin'
     if is_darwin:
         parser.add_argument('--spotlight', action='store_true',
                             help='If set, use the OS X Spotlight database to '
