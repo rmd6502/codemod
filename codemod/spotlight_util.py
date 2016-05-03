@@ -3,6 +3,7 @@
 # Copyright (c) 2007-2008 Facebook
 
 import Cocoa
+import objc
 
 
 class SpotlightUtil(object):
@@ -10,8 +11,7 @@ class SpotlightUtil(object):
     Searches a directory hierarchy using OS/X spotlight
     """
 
-    @staticmethod
-    def walk_directory(root_directory, match_pattern):
+    def walk_directory(self, root_directory, match_pattern):
         query = Cocoa.NSMetadataQuery.alloc().init()
         # going to trust that the user specified the proper
         # spotlight format pattern
@@ -20,11 +20,21 @@ class SpotlightUtil(object):
         if root_directory is not None:
             query.setSearchScopes_([root_directory])
         query.setPredicate_(predicate)
-        query.startQuery()
-        # TODO: figure out how to do this asynchronously if possible
-        while query.isGathering():
-            Cocoa.NSRunLoop.currentRunLoop().runUntilDate_(
-                Cocoa.NSDate.dateWithTimeIntervalSinceNow_(1))
+
+        Cocoa.NSNotificationCenter.defaultCenter(). \
+            addObserver_selector_name_object_(
+                self,
+                objc.selector(self._done),
+                Cocoa.NSMetadataQueryDidFinishGatheringNotification,
+                query)
+        if query.startQuery():
+            Cocoa.CFRunLoopRun()
+        Cocoa.NSNotificationCenter.defaultCenter(). \
+            removeObserver_name_object_(
+                self,
+                Cocoa.NSMetadataQueryDidFinishGatheringNotification,
+                query)
+
         query.stopQuery()
         items = []
         for item in query.results():
@@ -32,3 +42,7 @@ class SpotlightUtil(object):
             if filename is not None:
                 items.append(filename)
         return items
+
+    def _done(self, notification):
+        notification.object().stopQuery()
+        Cocoa.CFRunLoopStop(Cocoa.CFRunLoopGetCurrent())

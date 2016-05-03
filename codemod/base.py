@@ -408,8 +408,9 @@ class Query(object):
         end_pos = self.end_position or Position(None, None)
 
         path_list = None
+        spotlightUtil = SpotlightUtil()
         if self._spotlight_match_pattern is not None:
-            path_list = SpotlightUtil.walk_directory(
+            path_list = spotlightUtil.walk_directory(
                 self.root_directory, self._spotlight_match_pattern)
         else:
             path_list = Query._walk_directory(self.root_directory)
