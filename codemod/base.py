@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2
 
 # Copyright (c) 2007-2008 Facebook
 #
@@ -418,7 +418,6 @@ class Query(object):
             (self.inc_extensionless and is_extensionless(path))
         )
         for path in path_list:
-            print "path "+path
             try:
                 lines = list(open(path))
             except IOError:
