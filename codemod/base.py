@@ -415,7 +415,7 @@ class Query(object):
                 inputFile = sys.stdin
             else:
                 inputFile = open(self._input_file_list)
-            path_list = map(lambda filename: filename.replace('\\n',''), \
+            path_list = map(lambda filename: filename.replace('\n',''), \
                 list(inputFile))
             if inputFile != sys.stdin:
                 inputFile.close()
