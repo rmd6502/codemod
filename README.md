@@ -62,6 +62,15 @@ Options (all optional) include:
     --count
       Don't run normally.  Instead, just print out number of times places in the
       codebase where the 'query' matches.
+    --spotlight
+      Use spotlight search (OSX only) to speed up directory walk.  Fastest
+      option, but requires a current mdimport to be fully accurate.
+    --git
+      Use git grep -l to speed up directory walk.  Obviously only works in
+      git repositories.
+    --hg
+      Use hg grep -l to speed up directory walk.  Obviously only works in
+      hg repositories.
     --test
       Don't run normally.  Instead, just run the unit tests embedded in the
       codemod library.
