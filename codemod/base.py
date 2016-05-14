@@ -28,6 +28,7 @@ import textwrap
 from math import ceil
 from spotlight_util import SpotlightUtil
 from hg_util import MercurialUtil
+from git_util import GitUtil
 
 
 def is_extensionless(path):
@@ -414,6 +415,8 @@ class Query(object):
         matcher = None
         if self._matcher == 'hg':
             matcher = MercurialUtil()
+        elif self._matcher == 'git':
+            matcher = GitUtil()
         elif self._matcher == 'spotlight':
             matcher = SpotlightUtil()
 
@@ -968,6 +971,8 @@ def _parse_command_line():
                              'where the \'query\' matches.')
     parser.add_argument('--hg', action='store_true',
                         help='Use hg grep to save time finding files of interest.')
+    parser.add_argument('--git', action='store_true',
+                        help='Use git grep to save time finding files of interest.')
     parser.add_argument('match', nargs='?', action='store', type=str,
                         help='Regular expression to match.')
     parser.add_argument('subst', nargs='?', action='store', type=str,
@@ -1022,6 +1027,9 @@ def _parse_command_line():
     if arguments.hg:
         query_options['match_pattern'] = arguments.match
         query_options['matcher'] = 'hg'
+    if arguments.git:
+        query_options['match_pattern'] = arguments.match
+        query_options['matcher'] = 'git'
     options['query'] = Query(**query_options)
     if arguments.editor is not None:
         options['editor'] = arguments.editor
