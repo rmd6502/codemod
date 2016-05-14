@@ -994,7 +994,7 @@ def _parse_command_line():
                         help='Substitution to replace with.')
 
     is_darwin = platform.system() == 'Darwin'
-    if is_darwin and SpotlightUtils.isValid():
+    if is_darwin and SpotlightUtil.isValid():
         parser.add_argument('--spotlight', action='store_true',
                             help='If set, use the OS X Spotlight database to '
                                  'speed up the file and regex search. '
@@ -1026,7 +1026,7 @@ def _parse_command_line():
                                                exclude_paths)
 
     options = {}
-    if is_darwin and SpotlightUtils.isValid():
+    if is_darwin and SpotlightUtil.isValid():
         if arguments.spotlight:
             query_options['match_pattern'] = arguments.match
             query_options['matcher'] = 'spotlight'
