@@ -14,11 +14,13 @@ class MercurialUtil(object):
 
     def walk_directory(self, root_directory, match_pattern):
         """
-        Uses hg grep to find all files containing a particular pattern
+        Uses hg grep to find all files containing a particular pattern.
 
         >>> util = MercurialUtil()
         >>> util.walk_directory(".","try:")
         []
+
+        Note that this test fails because we're a git repo.
         """
         hgPipe = Popen(['hg', 'grep', '-l', match_pattern],
                        stdout=PIPE, cwd=root_directory)
