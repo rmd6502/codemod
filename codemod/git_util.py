@@ -2,9 +2,10 @@
 
 # Copyright (c) 2007-2008 Facebook
 
-from subprocess import Popen,PIPE
+from subprocess import Popen, PIPE
 import re
 from os import path
+
 
 class GitUtil(object):
     """
@@ -16,16 +17,18 @@ class GitUtil(object):
         Uses git grep to find all files containing a particular pattern
 
         >>> util = GitUtil()
-        >>> util.walk_directory(".","try:")
-        [ "base.py", "setup.py", "spotlight_util.py" ]
+        >>> util.walk_directory(".","compute_percentile")
+        ['./codemod/base.py', './codemod/git_util.py']
         """
-        gitPipe = Popen(['git', 'grep', '-l', match_pattern], stdout=PIPE, cwd=root_directory)
-        filelist = map(lambda name: path.join(root_directory,name), re.split('\n+', gitPipe.communicate()[0]))
-        print('returning '+",".join(filelist))
+        gitPipe = Popen(['git', 'grep', '-l', match_pattern], stdout=PIPE,
+                        cwd=root_directory)
+        filelist = map(lambda name: path.join(root_directory, name),
+                       re.split('\n+', gitPipe.communicate()[0]))
+        # remove the blank entry from the final \n
+        filelist.pop()
 
         return filelist
 
     @staticmethod
     def isValid():
         return True
-

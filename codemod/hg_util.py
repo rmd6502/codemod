@@ -2,9 +2,10 @@
 
 # Copyright (c) 2007-2008 Facebook
 
-from subprocess import Popen,PIPE
+from subprocess import Popen, PIPE
 import re
 from os import path
+
 
 class MercurialUtil(object):
     """
@@ -17,15 +18,16 @@ class MercurialUtil(object):
 
         >>> util = MercurialUtil()
         >>> util.walk_directory(".","try:")
-        [ "base.py", "setup.py", "spotlight_util.py" ]
+        []
         """
-        hgPipe = Popen(['hg', 'grep', '-l', match_pattern], stdout=PIPE, cwd=root_directory)
-        filelist = map(lambda name: path.join(root_directory,name), re.split('\n+', hgPipe.communicate()[0]))
-        print('returning '+",".join(filelist))
+        hgPipe = Popen(['hg', 'grep', '-l', match_pattern],
+                       stdout=PIPE, cwd=root_directory)
+        filelist = map(lambda name: path.join(root_directory, name),
+                       re.split('\n+', hgPipe.communicate()[0]))
 
+        filelist.pop()
         return filelist
 
     @staticmethod
     def isValid():
         return True
-

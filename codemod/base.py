@@ -334,7 +334,8 @@ class Query(object):
         @param match_pattern String representation of the match
                                     pattern, for use by spotlight_util if
                                     --spotlight is set.
-        @param matcher              Optional pattern matcher/directory walker to use
+        @param matcher              Optional pattern matcher/directory walker
+                                    to use
         """
         self.suggestor = suggestor
         self._start = start
@@ -970,9 +971,11 @@ def _parse_command_line():
                              'out number of times places in the codebase '
                              'where the \'query\' matches.')
     parser.add_argument('--hg', action='store_true',
-                        help='Use hg grep to save time finding files of interest.')
+                        help='Use hg grep to save time finding files of '
+                        'interest.')
     parser.add_argument('--git', action='store_true',
-                        help='Use git grep to save time finding files of interest.')
+                        help='Use git grep to save time finding files of '
+                        'interest.')
     parser.add_argument('match', nargs='?', action='store', type=str,
                         help='Regular expression to match.')
     parser.add_argument('subst', nargs='?', action='store', type=str,
