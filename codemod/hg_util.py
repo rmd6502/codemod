@@ -9,7 +9,7 @@ from os import path
 
 class MercurialUtil(object):
     """
-    Searches a directory hierarchy using OS/X spotlight.
+    Searches a directory hierarchy using hg grep
     """
 
     def walk_directory(self, root_directory, match_pattern):

@@ -9,7 +9,7 @@ from os import path
 
 class GitUtil(object):
     """
-    Searches a directory hierarchy using OS/X spotlight.
+    Searches a directory hierarchy using git grep.
     """
 
     def walk_directory(self, root_directory, match_pattern):
