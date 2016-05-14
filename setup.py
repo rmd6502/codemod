@@ -17,7 +17,7 @@ if platform.system() == 'Darwin':
 
 setup(
     name='codemod',
-    version="0.2.1",
+    version="0.2.2",
     url='http://github.com/facebook/codemod',
     license='Apache License 2.0',
     author="Facebook",
