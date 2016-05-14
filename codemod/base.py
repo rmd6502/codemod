@@ -27,6 +27,7 @@ import sys
 import textwrap
 from math import ceil
 from spotlight_util import SpotlightUtil
+from hg_util import MercurialUtil
 
 
 def is_extensionless(path):
@@ -298,7 +299,8 @@ class Query(object):
                  root_directory='.',
                  path_filter=_default_path_filter,
                  inc_extensionless=False,
-                 spotlight_match_pattern=None):
+                 match_pattern=None,
+                 matcher=None):
         """
         @param suggestor            A function that takes a list of lines and
                                     generates instances of Patch to suggest.
@@ -328,9 +330,10 @@ class Query(object):
         @param inc_extensionless    If True, will include all files without an
                                     extension when checking
                                     against the path_filter
-        @param spotlight_match_pattern String representation of the match
+        @param match_pattern String representation of the match
                                     pattern, for use by spotlight_util if
                                     --spotlight is set.
+        @param matcher              Optional pattern matcher/directory walker to use
         """
         self.suggestor = suggestor
         self._start = start
@@ -339,7 +342,8 @@ class Query(object):
         self.path_filter = path_filter
         self.inc_extensionless = inc_extensionless
         self._all_patches_cache = None
-        self._spotlight_match_pattern = spotlight_match_pattern
+        self._match_pattern = match_pattern
+        self._matcher = matcher
 
     def clone(self):
         import copy
@@ -407,10 +411,15 @@ class Query(object):
         end_pos = self.end_position or Position(None, None)
 
         path_list = None
-        spotlightUtil = SpotlightUtil()
-        if self._spotlight_match_pattern is not None:
-            path_list = spotlightUtil.walk_directory(
-                self.root_directory, self._spotlight_match_pattern)
+        matcher = None
+        if self._matcher == 'hg':
+            matcher = MercurialUtil()
+        elif self._matcher == 'spotlight':
+            matcher = SpotlightUtil()
+
+        if self._match_pattern is not None:
+            path_list = matcher.walk_directory(
+                self.root_directory, self._match_pattern)
         else:
             path_list = Query._walk_directory(self.root_directory)
         path_list = Query._sublist(path_list, start_pos.path, end_pos.path)
@@ -489,6 +498,7 @@ class Query(object):
         False
         """
         return (
+            len(path) > 0 and
             '/.' not in path and
             path[-1] != '~' and
             not path.endswith('tags') and
@@ -956,6 +966,8 @@ def _parse_command_line():
                         help='Don\'t run normally.  Instead, just print '
                              'out number of times places in the codebase '
                              'where the \'query\' matches.')
+    parser.add_argument('--hg', action='store_true',
+                        help='Use hg grep to save time finding files of interest.')
     parser.add_argument('match', nargs='?', action='store', type=str,
                         help='Regular expression to match.')
     parser.add_argument('subst', nargs='?', action='store', type=str,
@@ -1002,10 +1014,14 @@ def _parse_command_line():
     options = {}
     if is_darwin:
         if arguments.spotlight:
-            query_options['spotlight_match_pattern'] = arguments.match
+            query_options['match_pattern'] = arguments.match
+            query_options['matcher'] = 'spotlight'
             print('Please note: if you haven\'t run "mdimport" recently from '
                   'this directory, I may not find every instance!')
 
+    if arguments.hg:
+        query_options['match_pattern'] = arguments.match
+        query_options['matcher'] = 'hg'
     options['query'] = Query(**query_options)
     if arguments.editor is not None:
         options['editor'] = arguments.editor
