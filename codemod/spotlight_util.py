@@ -15,9 +15,11 @@ try:
             """
             Uses Spotlight to find all files containing a particular pattern
 
+            >>> import os.path
             >>> util = SpotlightUtil()
-            >>> util.walk_directory(".","try:")
-            [ "base.py", "setup.py", "spotlight_util.py" ]
+            >>> map(lambda name: os.path.basename(name), \
+                util.walk_directory("./codemod","try:"))
+            [u'spotlight_util.py', u'base.py']
             """
             query = Cocoa.NSMetadataQuery.alloc().init()
             # going to trust that the user specified the proper
