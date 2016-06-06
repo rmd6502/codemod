@@ -17,9 +17,9 @@ try:
 
             >>> import os.path
             >>> util = SpotlightUtil()
-            >>> map(lambda name: os.path.basename(name), \
-                util.walk_directory("./codemod","try:"))
-            [u'spotlight_util.py', u'base.py']
+            >>> sorted(map(lambda name: os.path.basename(name), \
+                util.walk_directory("./codemod","try:")))
+            [u'base.py', u'spotlight_util.py']
             """
             query = Cocoa.NSMetadataQuery.alloc().init()
             # going to trust that the user specified the proper

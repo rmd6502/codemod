@@ -1,0 +1,5 @@
+try:
+  require 'nothing'
+except thing:
+  pass
+

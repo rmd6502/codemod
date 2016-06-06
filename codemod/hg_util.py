@@ -17,8 +17,8 @@ class MercurialUtil(object):
         Uses hg grep to find all files containing a particular pattern.
 
         >>> util = MercurialUtil()
-        >>> util.walk_directory(".","try:")
-        []
+        >>> util.walk_directory("./hgtestrepo","try:")
+        ['./hgtestrepo/filewithtry']
 
         Note that this test fails because we're a git repo.
         """
