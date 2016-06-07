@@ -17,7 +17,7 @@ class GitUtil(object):
         Uses git grep to find all files containing a particular pattern
 
         >>> util = GitUtil()
-        >>> util.walk_directory(".","compute_percentile")
+        >>> sorted(util.walk_directory(".","compute_percentile"))
         ['./codemod/base.py', './codemod/git_util.py']
         """
         gitPipe = Popen(['git', 'grep', '-l', match_pattern], stdout=PIPE,
